@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .scrollable-content {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .copy-button:hover {
+            background-color: #4338ca;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .toast {
+            animation: fadeOut 3s ease-in forwards;
+            animation-delay: 2s;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Dark mode styles */
+        .dark body {
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+        .dark .bg-white {
+            background-color: #2d2d2d;
+        }
+        .dark .text-gray-800 {
+            color: #e5e5e5;
+        }
+        .dark .text-gray-600 {
+            color: #d1d1d1;
+        }
+        .dark .bg-gray-50 {
+            background-color: #1f1f1f;
+        }
+        .dark .border-gray-200 {
+            border-color: #404040;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }">
+    <div class="container mx-auto px-4 py-8">
+        <div x-data="resultSection()" class="max-w-4xl w-full mx-auto bg-white shadow-xl rounded-lg p-8">
+            <input type="hidden" id="task-id" value="{{ task_id }}">
+            
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Transcription Results</h1>
+                <div class="flex space-x-4">
+                    <!-- Dark mode toggle -->
+                    <button 
+                        @click="darkMode = !darkMode"
+                        class="px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+                        :class="darkMode ? 'bg-yellow-500 text-gray-900' : 'bg-gray-800 text-white'">
+                        <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+                        <span x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
+                    </button>
+                    
+                    <button 
+                        onclick="copyTranscription()"
+                        class="copy-button bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200 hover:bg-indigo-700">
+                        <i class="fas fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
+                    <button 
+                        onclick="downloadTranscription()"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200 hover:bg-green-700">
+                        <i class="fas fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div id="stats-bar" class="mb-6 grid grid-cols-3 gap-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold">Word Count</h3>
+                    <p id="word-count" class="text-2xl font-bold">0</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold">Reading Time</h3>
+                    <p id="reading-time" class="text-2xl font-bold">0 min</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold">Characters</h3>
+                    <p id="char-count" class="text-2xl font-bold">0</p>
+                </div>
+            </div>
+            
+            <div id="processing-status" class="flex flex-col items-center justify-center py-12 {{ 'hidden' if success else '' }}">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-lg text-gray-600">Processing your audio file...</p>
+                <p class="text-sm text-gray-500 mt-2">Task ID: {{ task_id }}</p>
+            </div>
+
+            <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span>{{ error or 'An unknown error occurred' }}</span>
+                </div>
+            </div>
+            
+            {% if success %}
+                <div class="bg-green-50 dark:bg-green-900 border-l-4 border-green-400 p-4 rounded-lg mb-6" role="alert">
+                    <div class="flex">
+                        <i class="fas fa-check-circle text-green-400 text-xl mr-2"></i>
+                        <div>
+                            <p class="font-bold text-green-700 dark:text-green-300">Transcription Successful!</p>
+                            <p class="text-green-600 dark:text-green-400">Task ID: {{ task_id }}</p>
+                            {% if processed_at %}
+                                <p class="text-sm text-green-600 dark:text-green-400 mt-1">Processed at: {{ processed_at }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 flex items-center">
+                        <i class="fas fa-file-alt mr-2"></i>
+                        Full Transcription
+                    </h2>
+                    <div class="scrollable-content">
+                        <pre id="transcriptionText" class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words overflow-auto w-full font-sans">{{ transcription or 'No transcription available' }}</pre>
+                    </div>
+                </div>
+
+                {% if context %}
+                    <div id="context-section" class="mt-6 bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border-l-4 border-blue-400">
+                        <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200 flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Context
+                        </h3>
+                        <p class="text-blue-600 dark:text-blue-300 mt-2">{{ context }}</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Toast Notification -->
+            <div id="toast" class="fixed top-4 right-4 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 px-6 py-3 rounded-lg shadow-lg hidden">
+                <span id="toast-message"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('toast');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('toast');
+            }, 5000);
+        }
+
+        function updateStats() {
+            const transcription = document.getElementById('transcriptionText').innerText;
+            const words = transcription.trim().split(/\s+/).length;
+            const chars = transcription.length;
+            const readingTime = Math.ceil(words / 200); // Assuming 200 words per minute reading speed
+
+            document.getElementById('word-count').textContent = words;
+            document.getElementById('char-count').textContent = chars;
+            document.getElementById('reading-time').textContent = `${readingTime} min`;
+        }
+
+        function copyTranscription() {
+            const transcription = document.getElementById('transcriptionText').innerText;
+            navigator.clipboard.writeText(transcription)
+                .then(() => showToast('Transcription copied to clipboard!'))
+                .catch(() => showToast('Failed to copy transcription'));
+        }
+
+        function downloadTranscription() {
+            const transcription = document.getElementById('transcriptionText').innerText;
+            const blob = new Blob([transcription], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            a.href = url;
+            a.download = `transcription-${timestamp}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showToast('Transcription downloaded!');
+        }
+
+        function resultSection() {
+            return {
+                init() {
+                    const taskId = document.getElementById('task-id').value;
+                    if (taskId) {
+                        this.pollTaskStatus(taskId);
+                    }
+                    // Initialize stats if transcription is already loaded
+                    if (document.getElementById('transcriptionText')) {
+                        updateStats();
+                    }
+                },
+                pollTaskStatus(taskId) {
+                    const statusElement = document.getElementById('processing-status');
+                    const errorElement = document.getElementById('error-message');
+                    const transcriptionContainer = document.querySelector('.scrollable-content');
+                    
+                    const poll = async () => {
+                        try {
+                            const response = await fetch(`/task_status/${taskId}`);
+                            const data = await response.json();
+                            
+                            switch(data.status) {
+                                case 'completed':
+                                    if (data.result.success) {
+                                        statusElement.classList.add('hidden');
+                                        
+                                        if (data.result.transcription) {
+                                            transcriptionContainer.innerHTML = `
+                                                <pre id="transcriptionText" class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words overflow-auto w-full font-sans">${data.result.transcription}</pre>
+                                            `;
+                                            updateStats();
+                                        }
+                                        
+                                        const contextSection = document.getElementById('context-section');
+                                        if (contextSection && data.result.context) {
+                                            contextSection.innerHTML = `
+                                                <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200 flex items-center">
+                                                    <i class="fas fa-info-circle mr-2"></i>
+                                                    Context
+                                                </h3>
+                                                <p class="text-blue-600 dark:text-blue-300 mt-2">${data.result.context}</p>
+                                            `;
+                                            contextSection.classList.remove('hidden');
+                                        }
+                                    }
+                                    break;
+                                case 'failed':
+                                    statusElement.classList.add('hidden');
+                                    errorElement.textContent = data.error || 'Task processing failed';
+                                    errorElement.classList.remove('hidden');
+                                    break;
+                                default:
+                                    setTimeout(poll, 3000);
+                            }
+                        } catch (error) {
+                            console.error('Error polling task status:', error);
+                            statusElement.classList.add('hidden');
+                            errorElement.textContent = 'Error checking task status';
+                            errorElement.classList.remove('hidden');
+                        }
+                    };
+                    
+                    poll();
+                }
+            };
+        }
+    </script>
+</body>
+</html>

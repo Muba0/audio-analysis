@@ -1,0 +1,170 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app  # Mount the entire project directory for live updates
+      - /app/node_modules  # Avoid overwriting node_modules if using Node.js
+      - uploads:/app/uploads
+      - logs:/app/logs
+    environment:
+      - GOOGLE_API_KEY_0=${GOOGLE_API_KEY_0}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      worker:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    volumes:
+      - .:/app
+      - uploads:/app/uploads
+      - logs:/app/logs
+    environment:
+      - GOOGLE_API_KEY_0=${GOOGLE_API_KEY_0}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_WORKER_NAME=worker_${HOSTNAME}
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "celery", "-A", "tasks", "inspect", "ping", "-d", "worker@$CELERY_WORKER_NAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  scaler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: scaler
+    volumes:
+      - .:/app
+      - uploads:/app/uploads
+      - logs:/app/logs
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - MIN_WORKERS=3
+      - MAX_WORKERS=20
+      - TASKS_PER_WORKER=1
+      - CHECK_INTERVAL=10
+      - SCALE_UP_THRESHOLD=0.8
+      - SCALE_DOWN_THRESHOLD=0.3
+      - COOLDOWN_PERIOD=60
+      - WORKER_STARTUP_TIME=30
+      - LOG_LEVEL=INFO
+      - LOG_FILE=/app/logs/scaler.log
+      - CELERY_APP_NAME=tasks
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "ps", "aux", "|", "grep", "[c]elery_scaler"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+  
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./static:/usr/share/nginx/html/static
+      - uploads:/usr/share/nginx/html/uploads
+    depends_on:
+      web:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.2"
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  uploads:
+  logs:
+  redis_data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

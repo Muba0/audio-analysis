@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+        --primary-color: #007bff;
+        --background-color: #f2f2f7;
+        --text-color: #1a1a1a;
+        --accent-color: #5856d6;
+        --white: #ffffff;
+        --light-gray: #e5e5ea;
+        --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        overscroll-behavior: none;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .upload-container {
+        background-color: var(--white);
+        border-radius: 18px;
+        padding: 40px;
+        box-shadow: var(--shadow-subtle);
+        border: 1px solid var(--light-gray);
+        max-width: 600px;
+        margin: 50px auto;
+        transition: box-shadow 0.4s ease;
+    }
+
+    .upload-container:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+    h2 {
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .file-drop-zone {
+        border: 2px dashed var(--primary-color);
+        border-radius: 12px;
+        padding: 50px;
+        text-align: center;
+        cursor: pointer;
+        background-color: rgba(0, 122, 255, 0.05);
+        transition: all 0.4s ease;
+    }
+
+    .file-drop-zone:hover {
+        background-color: rgba(0, 122, 255, 0.1);
+        border-color: var(--accent-color);
+    }
+
+    .file-drop-zone.dragover {
+        background-color: rgba(88, 86, 214, 0.1);
+        border-color: var(--accent-color);
+        transform: scale(1.02);
+    }
+
+    .file-drop-zone.invalid {
+        border-color: #ff3b30;
+        background-color: rgba(255, 59, 48, 0.1);
+    }
+
+    .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        text-transform: none;
+        padding: 12px 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border: none;
+        color: var(--white);
+    }
+
+    .btn-outline-danger {
+        border-color: #ff3b30;
+        color: #ff3b30;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #34c759, #5856d6);
+        border: none;
+        color: var(--white);
+    }
+
+    #filePreview {
+        background-color: rgba(0, 122, 255, 0.05);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 15px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border-color: var(--light-gray);
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+    }
+
+    .card {
+        border-radius: 16px;
+        border: 1px solid var(--light-gray);
+        box-shadow: var(--shadow-subtle);
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .btn-loading {
+        position: relative;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        margin-top: -12px;
+        margin-left: -12px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: var(--white);
+        animation: spin 1s linear infinite;
+    }
+
+    @media (max-width: 768px) {
+        .upload-container {
+            padding: 20px;
+            margin: 20px;
+            border-radius: 12px;
+        }
+
+        .file-drop-zone {
+            padding: 30px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-container">
+            <h2 class="text-center mb-4">Audio Transcription & Analysis </h2>
+
+            <div class="file-drop-zone" id="dropZone">
+                <input type="file" id="audioFile" name="file" accept=".mp3,.wav,.ogg,.m4a" class="d-none">
+                <div id="dropZoneContent">
+                    <label for="audioFile" class="btn btn-primary" id="selectFileLabel">
+                        <i class="bi bi-cloud-upload"></i> Choose Audio File
+                    </label>
+                    <p class="mt-2 text-muted">or drag and drop here</p>
+                </div>
+
+                <div id="filePreview" class="d-none">
+                    <div>
+                        <i class="bi bi-file-earmark-music me-2"></i>
+                        <span id="fileName"></span>
+                        <small id="fileSize" class="text-muted ms-2"></small>
+                    </div>
+                    <button id="removeFile" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="uploadStatus" class="text-center mt-3"></div>
+            <div id="errorMessage" class="text-center"></div>
+
+            <div class="mt-3">
+                <label for="context" class="form-label">Optional Context</label>
+                <textarea id="context" class="form-control" rows="3" placeholder="Provide additional context for analysis (optional)"></textarea>
+            </div>
+
+            <div id="analyzeSection" class="mt-4" style="display:none;">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Audio Analysis Details</h5>
+                        <p id="audioLengthInfo"></p>
+                        <p id="estimatedProcessingTime"></p>
+                        <button id="analyzeButton" class="btn btn-success w-100" disabled>
+                            Start Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('audioFile');
+            const selectFileLabel = document.getElementById('selectFileLabel');
+            const dropZoneContent = document.getElementById('dropZoneContent');
+            const filePreview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const removeFileBtn = document.getElementById('removeFile');
+            const errorMessage = document.getElementById('errorMessage');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const analyzeSection = document.getElementById('analyzeSection');
+            const analyzeButton = document.getElementById('analyzeButton');
+            const contextInput = document.getElementById('context');
+
+            const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB
+            const ALLOWED_TYPES = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/x-m4a'];
+
+            let selectedFile = null;
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Highlight drop zone when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropZone.classList.add('dragover');
+            }
+
+            function unhighlight() {
+                dropZone.classList.remove('dragover');
+                dropZone.classList.remove('invalid');
+            }
+
+            // Improved file selection logic
+            dropZone.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Only trigger file input if no file is selected
+                if (!fileInput.files.length) {
+                    fileInput.click();
+                }
+            });
+
+            // Prevent label from retriggering file dialog
+            selectFileLabel.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Prevent file input from retriggering dialog
+            fileInput.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const droppedFiles = e.dataTransfer.files;
+                handleFiles(droppedFiles[0]);
+            }
+
+            // Improved file input change handler
+            fileInput.addEventListener('change', (e) => {
+                // Ensure files are handled only once
+                if (e.target.files.length > 0) {
+                    handleFiles(e.target.files[0]);
+                }
+            });
+
+            // File removal
+            removeFileBtn.addEventListener('click', () => {
+                resetFileInput();
+            });
+
+            function resetFileInput() {
+                fileInput.value = '';
+                dropZoneContent.classList.remove('d-none');
+                filePreview.classList.add('d-none');
+                filePreview.innerHTML = '';
+                errorMessage.textContent = '';
+                uploadStatus.textContent = '';
+                analyzeSection.style.display = 'none';
+                analyzeButton.disabled = true;
+                selectedFile = null;
+            }
+
+            function handleFiles(file) {
+                if (!file) return;
+
+                // Validate file type and size
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                    showError('Invalid file type. Please upload MP3, WAV, OGG, or M4A files.');
+                    return;
+                }
+
+                if (file.size > MAX_FILE_SIZE) {
+                    showError('File is too large. Maximum file size is 200MB.');
+                    return;
+                }
+
+                // Store the file and enable analyze button
+                selectedFile = file;
+                dropZoneContent.classList.add('d-none');
+                filePreview.classList.remove('d-none');
+                filePreview.innerHTML = `
+                    <p>File: ${file.name}</p>
+                    <p>Size: ${formatFileSize(file.size)}</p>
+                `;
+                analyzeSection.style.display = 'block';
+                analyzeButton.disabled = false;
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                dropZone.classList.add('invalid');
+                setTimeout(() => {
+                    dropZone.classList.remove('invalid');
+                }, 3000);
+            }
+
+            // Analysis button handler
+            analyzeButton.addEventListener('click', startAnalysis);
+
+            function startAnalysis() {
+                if (!selectedFile) {
+                    showError('Please select a file first.');
+                    return;
+                }
+
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('context', ''); // Optional context
+
+                // Update UI to show processing state
+                analyzeButton.disabled = true;
+                analyzeButton.innerHTML = 'Processing...';
+
+                // Create a status element to show task details
+                const statusElement = document.createElement('div');
+                statusElement.id = 'task-status';
+                statusElement.className = 'alert alert-info mt-3 text-center';
+                statusElement.innerHTML = 'Preparing to upload and process audio file...';
+                dropZone.appendChild(statusElement);
+
+                fetch('/process_audio', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.detail || 'Upload failed');
+                        });
+                    }
+                    return response.json();
+                }) 
+                .then(data => {
+                    if (data.task_id) {
+                        //statusElement.innerHTML = `Audio processing started. Task ID: ${data.task_id}`;
+                        statusElement.innerHTML = "Audio processing started.  Please hold on—this may take a moment to complete.";
+                        statusElement.className = 'alert alert-success mt-3 text-center';
+
+                        // Redirect to results page with task ID
+                        setTimeout(() => {
+                            window.location.href = `/results/${data.task_id}`;
+                        }, 2000);
+                    } else {
+                        throw new Error('No task ID received');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusElement.innerHTML = `Error processing audio: ${error.message}`;
+                    statusElement.className = 'alert alert-danger mt-3 text-center';
+                    analyzeButton.disabled = false;
+                    analyzeButton.innerHTML = 'Analyze Audio';
+                });
+            }
+
+            // Utility function to format file size
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+        });
+    </script>
+</body>
+</html>
