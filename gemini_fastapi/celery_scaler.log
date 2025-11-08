@@ -11046,3 +11046,113 @@
 2025-03-12 08:21:37,736 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
 2025-03-12 08:21:49,752 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
 2025-03-12 08:22:01,765 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:20:00,654 - celery_scaler - INFO - Starting Celery auto-scaler...
+2025-11-08 06:20:01,696 - celery_scaler - INFO - Status - Queue: 0, Workers: 0
+2025-11-08 06:20:02,702 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:20:04,732 - celery_scaler - WARNING - Worker count (0) below minimum threshold (3)
+2025-11-08 06:20:04,732 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:20:17,741 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:20:18,746 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:20:18,746 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:20:31,839 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:20:43,966 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:20:47,327 - celery_scaler - INFO - Received signal 15
+2025-11-08 06:20:47,329 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:21:10,793 - celery_scaler - INFO - Starting Celery auto-scaler...
+2025-11-08 06:21:11,832 - celery_scaler - INFO - Status - Queue: 0, Workers: 0
+2025-11-08 06:21:12,847 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:21:14,851 - celery_scaler - WARNING - Worker count (0) below minimum threshold (3)
+2025-11-08 06:21:14,851 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:21:28,178 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:21:29,477 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:21:29,478 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:21:42,975 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:21:44,181 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:21:44,274 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:22:01,780 - celery_scaler - INFO - Status - Queue: 0, Workers: 7
+2025-11-08 06:22:14,698 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:22:26,883 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:22:39,029 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:22:51,101 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:22:52,115 - celery_scaler - INFO - Scaling down by 8 workers
+2025-11-08 06:23:23,665 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:23:31,896 - celery_scaler - INFO - Received signal 15
+2025-11-08 06:23:31,896 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:23:36,161 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:23:49,097 - celery_scaler - INFO - Starting Celery auto-scaler...
+2025-11-08 06:23:50,178 - celery_scaler - INFO - Status - Queue: 0, Workers: 0
+2025-11-08 06:23:51,181 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:23:53,268 - celery_scaler - WARNING - Worker count (0) below minimum threshold (3)
+2025-11-08 06:23:53,269 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:24:06,573 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:24:07,872 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:24:07,873 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:24:22,578 - celery_scaler - INFO - Status - Queue: 0, Workers: 7
+2025-11-08 06:24:34,786 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:24:46,977 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:24:59,021 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:25:11,113 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:25:12,174 - celery_scaler - INFO - Scaling down by 6 workers
+2025-11-08 06:25:38,144 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:25:43,623 - celery_scaler - INFO - Received signal 15
+2025-11-08 06:25:43,624 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:25:47,675 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:26:03,066 - celery_scaler - INFO - Starting Celery auto-scaler...
+2025-11-08 06:26:04,163 - celery_scaler - INFO - Status - Queue: 0, Workers: 0
+2025-11-08 06:26:05,172 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:26:07,176 - celery_scaler - WARNING - Worker count (0) below minimum threshold (3)
+2025-11-08 06:26:07,177 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:26:20,551 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:26:21,746 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:26:21,746 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:26:26,689 - celery_scaler - INFO - Received signal 15
+2025-11-08 06:26:26,690 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:26:43,523 - celery_scaler - INFO - Starting Celery auto-scaler...
+2025-11-08 06:26:44,549 - celery_scaler - INFO - Status - Queue: 0, Workers: 0
+2025-11-08 06:26:45,553 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:26:47,554 - celery_scaler - WARNING - Worker count (0) below minimum threshold (3)
+2025-11-08 06:26:47,600 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:27:00,899 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:27:02,204 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:27:02,204 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:27:16,801 - celery_scaler - INFO - Status - Queue: 0, Workers: 5
+2025-11-08 06:27:29,218 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:27:41,346 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:27:53,530 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:28:05,706 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:28:06,714 - celery_scaler - INFO - Scaling down by 6 workers
+2025-11-08 06:28:32,763 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:28:44,798 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:28:56,831 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:29:08,869 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:29:20,905 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:29:32,925 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:29:44,959 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:29:56,985 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:30:06,225 - celery_scaler - INFO - Received signal 15
+2025-11-08 06:30:06,226 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:30:10,332 - celery_scaler - INFO - Cleaning up resources...
+2025-11-08 06:30:47,678 - celery_scaler - INFO - Starting Celery auto-scaler...
+2025-11-08 06:30:48,760 - celery_scaler - INFO - Status - Queue: 0, Workers: 0
+2025-11-08 06:30:49,776 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:30:51,780 - celery_scaler - WARNING - Worker count (0) below minimum threshold (3)
+2025-11-08 06:30:51,780 - celery_scaler - INFO - Scaling up by 3 workers
+2025-11-08 06:31:05,248 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:31:06,548 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:31:06,548 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:31:19,850 - celery_scaler - INFO - Status - Queue: 0, Workers: 1
+2025-11-08 06:31:22,441 - celery_scaler - WARNING - Worker count (1) below minimum threshold (3)
+2025-11-08 06:31:22,744 - celery_scaler - INFO - Scaling up by 2 workers
+2025-11-08 06:31:36,752 - celery_scaler - INFO - Status - Queue: 0, Workers: 9
+2025-11-08 06:31:48,873 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:32:00,969 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:32:13,091 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:32:25,114 - celery_scaler - INFO - Status - Queue: 0, Workers: 11
+2025-11-08 06:32:26,144 - celery_scaler - INFO - Scaling down by 8 workers
+2025-11-08 06:33:00,250 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:33:12,275 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:33:24,312 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:33:36,336 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:33:48,362 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:34:00,385 - celery_scaler - INFO - Status - Queue: 0, Workers: 3
+2025-11-08 06:34:12,409 - celery_scaler - INFO - Status - Queue: 0, Workers: 3

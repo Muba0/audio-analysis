@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       target: web
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - .:/app  # Mount the entire project directory for live updates
       - /app/node_modules  # Avoid overwriting node_modules if using Node.js
@@ -107,38 +107,10 @@ services:
       retries: 3
       start_period: 20s
   
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./static:/usr/share/nginx/html/static
-      - uploads:/usr/share/nginx/html/uploads
-    depends_on:
-      web:
-        condition: service_started
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-        reservations:
-          cpus: "0.1"
-          memory: 128M
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-  
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
