@@ -22,9 +22,7 @@ class APIKeyManager:
             key = os.getenv(f"GOOGLE_API_KEY_{i}")
             if key:
                 api_keys.append(key)
-        
-        if not api_keys:
-            raise ValueError("No Google API keys configured")
+
         return api_keys
 
     async def _is_key_available(self, api_key: str) -> bool:
@@ -48,12 +46,15 @@ class APIKeyManager:
 
     async def get_available_key(self) -> Optional[str]:
         """Get an available key, retrying if needed"""
+        if not self._api_keys:
+            return None
+
         retries = 0
         while retries < self.MAX_RETRIES:
             current_time = datetime.now()
             second_digit = current_time.second % 10  # Get the last digit of seconds
             key = await self._get_key_by_second_digit(second_digit)
-            
+
             if key:
                 # Mark the key as used
                 async with self._lock:
@@ -61,7 +62,7 @@ class APIKeyManager:
                 return key
             retries += 1
             await asyncio.sleep(self.RETRY_DELAY)
-        
+
         return None
 
     async def release_key(self, api_key: str):
