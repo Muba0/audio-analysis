@@ -5,7 +5,7 @@ dockerfilePath = "./gemini_fastapi/Dockerfile.railway"
 
 
 [services.web]
-tcpProxyApplicationPort = 8000
+tcpProxyApplicationPort = 8080
 
 [services.redis]
 image = "redis:7-alpine"
