@@ -3,3 +3,6 @@
 # Uploaded files
 uploads/*
 !uploads/.gitkeep
+*pycache__/
+*.pyc
+celery_scaler.log
