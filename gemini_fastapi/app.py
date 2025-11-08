@@ -222,7 +222,7 @@ async def process_audio(
         logger.info(f"Task submitted: ID = {task.id}")
 
         # Connect to Redis
-        redis_client = redis.StrictRedis(host='redis', port=6379, decode_responses=True)
+        redis_client = redis.from_url(os.getenv('REDIS_URL', 'redis://redis:6379/0'))
 
         # Check the queue contents (default queue name is 'celery')
         queue_name = 'celery'

@@ -8,12 +8,14 @@ import google.generativeai as genai
 from datetime import datetime
 from gemini_fastapi.transcription import transcribe_audio, cleanup_file, validate_api_key
 from celery.signals import task_success, task_failure
+import os
 
 # Apply nest_asyncio to handle event loops in multi-threaded environments
 nest_asyncio.apply()
 
 # Configure the Celery app
-celery_app = Celery('my_app', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
+redis_url = os.getenv('REDIS_URL', 'redis://redis:6379/0')
+celery_app = Celery('my_app', broker=redis_url, backend=redis_url)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')

@@ -80,7 +80,7 @@ async def transcribe_audio(
             )
 
             # Read the prompt from file
-            with open("prompt_1.txt", "r", encoding="utf-8") as file:
+            with open("gemini_fastapi/prompt_1.txt", "r", encoding="utf-8") as file:
                 prompt_1_content = file.read()
 
             # Prepare the prompt
