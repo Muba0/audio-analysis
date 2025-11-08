@@ -6,7 +6,7 @@ import asyncio
 import nest_asyncio
 import google.generativeai as genai
 from datetime import datetime
-from transcription import transcribe_audio, cleanup_file, validate_api_key
+from gemini_fastapi.transcription import transcribe_audio, cleanup_file, validate_api_key
 from celery.signals import task_success, task_failure
 
 # Apply nest_asyncio to handle event loops in multi-threaded environments
@@ -128,4 +128,3 @@ def handle_task_success(sender=None, result=None, **kwargs):
 def handle_task_failure(sender=None, exception=None, traceback=None, **kwargs):
     logger.error(f"Task {sender} failed with exception: {exception}")
     logger.error(f"Traceback: {traceback}")
-

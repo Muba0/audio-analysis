@@ -16,10 +16,10 @@ import aiofiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from celery.result import AsyncResult
-from tasks import process_audio_file, celery_app
+from gemini_fastapi.tasks import process_audio_file, celery_app
 
 # Import the API manager
-from apimanager import APIKeyManager
+from gemini_fastapi.apimanager import APIKeyManager
 
 app = FastAPI()
 
@@ -28,8 +28,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(m
 logger = logging.getLogger(__name__)
 
 # Configure templates and static files
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="gemini_fastapi/templates")
+app.mount("/static", StaticFiles(directory="gemini_fastapi/static"), name="static")
 
 # Load environment variables
 load_dotenv()
