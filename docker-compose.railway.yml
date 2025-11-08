@@ -1,0 +1,31 @@
+services:
+  web:
+    build:
+      context: gemini_fastapi/
+      dockerfile: Dockerfile.railway
+    ports:
+      - "8000:8000"
+    environment:
+      - GOOGLE_API_KEY_0=${GOOGLE_API_KEY_0}
+      - GOOGLE_API_KEY_1=${GOOGLE_API_KEY_1}
+      - GOOGLE_API_KEY_2=${GOOGLE_API_KEY_2}
+      - GOOGLE_API_KEY_3=${GOOGLE_API_KEY_3}
+      - GOOGLE_API_KEY_4=${GOOGLE_API_KEY_4}
+      - GOOGLE_API_KEY_5=${GOOGLE_API_KEY_5}
+      - GOOGLE_API_KEY_6=${GOOGLE_API_KEY_6}
+      - GOOGLE_API_KEY_7=${GOOGLE_API_KEY_7}
+      - GOOGLE_API_KEY_8=${GOOGLE_API_KEY_8}
+      - GOOGLE_API_KEY_9=${GOOGLE_API_KEY_9}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
