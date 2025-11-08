@@ -3,8 +3,6 @@
 import os
 import asyncio
 import logging
-from pathlib import Path
-import traceback
 import time
 import math
 import redis
